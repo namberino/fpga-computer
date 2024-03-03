@@ -1,8 +1,8 @@
-# An 8-bit computer implemented in FPGA
+# An computer implemented in FPGA
 
-This is an 8-bit computer implemented using Verilog
+This is a computer implemented using Verilog
 
-This computer can perform addition and subtraction on integers
+Currently, this computer can perform addition and subtraction on integers
 
 We can program this computer using the [program.bin](program.bin) file
 
