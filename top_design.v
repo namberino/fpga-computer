@@ -4,21 +4,24 @@ module top_design(
     // output reg[3:0] out1
 );
 
-	reg[7:0] bus;
+	reg[15:0] bus;
 
 	// multiplex between the output of the different modules
 	always @ (*)
 	begin
-		if (ir_en) 
+		if (alu_en) 
 		begin
-			bus = ir_out;
-		end else if (adder_en) 
-		begin
-			bus = adder_out;
+			bus = alu_out;
 		end else if (a_en) 
 		begin
 			bus = a_out;
-		end else if (mem_en) 
+		end else if (b_en)
+		begin
+			bus = b_out;
+		end else if (c_en)
+		begin
+			bus = c_out;
+		end else if (mdr_en)
 		begin
 			bus = mem_out;
 		end else if (pc_en) 

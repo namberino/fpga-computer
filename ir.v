@@ -1,10 +1,9 @@
-// intruction register (seperate opcode from data)
-// the upper 4 bits are the opcode, lower 4 bits are the operand
+// instruction register will store the opcode of the currently executing instruction
 module ir(
 	input clk, 
 	input rst,
 	input load,
-	input[7:0] bus,
+	input[15:0] bus,
 
 	output[7:0] out
 );
@@ -18,7 +17,7 @@ module ir(
 			ir <= 8'b0;
 		end else if (load)
 		begin
-			ir <= bus;
+			ir <= bus[7:0];
 		end
 	end
 
