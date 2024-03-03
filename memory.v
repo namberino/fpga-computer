@@ -1,12 +1,10 @@
-// there's a 4-bit register called the Memory Address Register (MAR) (used to store a memory address)
-// this computer takes 2 clock cycles to read from memory: 
-// - 1st cycle loads an address from the bus into the MAR (using the load signal)
-// - 2nd cycle uses the value in the MAR to address into ram and output that value onto the bus
+// 64k memory addresses
 module memory(
 	input clk,
 	input rst,
-	input load,
-	input[7:0] bus,
+	input mar_we,
+	input ram_we,
+	input[15:0] bus,
 
 	output[7:0] out
 );
@@ -16,17 +14,25 @@ module memory(
 		$readmemh("program.bin", ram);
 	end
 
-	reg[3:0] mar;
-	reg[7:0] ram[0:15];		// 16 8-bit wide elements
+	reg[15:0] mar;
+	reg[7:0] ram[0:65535];
 
 	always @ (posedge clk, posedge rst)
 	begin
 		if (rst)
 		begin
-			mar <= 4'b0;
-		end else if (load)
+			mar <= 16'b0;
+		end else if (mar_we)
 		begin
-			mar <= bus[3:0];
+			mar <= bus;
+		end
+	end
+
+	always @ (posedge clk)
+	begin
+		if (ram_we)
+		begin
+			ram[mar] <= bus[7:0];
 		end
 	end
 
