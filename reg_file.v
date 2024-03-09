@@ -75,10 +75,10 @@ module reg_file(
 	begin
 		if (rd_ext)
 		begin
-			data_out = {data[rd_dst], data[rd_dst + 1]};
+			out = {data[rd_dst], data[rd_dst + 1]};
 		end else
 		begin
-			data_out = {8'b0, data[rd_dst]};
+			out = {8'b0, data[rd_dst]};
 		end
 	end
 

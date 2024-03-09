@@ -1,15 +1,15 @@
 [*]
 [*] GTKWave Analyzer v3.4.0 (w)1999-2022 BSI
-[*] Mon Feb 26 02:28:21 2024
+[*] Sat Mar  9 14:35:02 2024
 [*]
 [dumpfile] "top_design_tb.vcd"
-[dumpfile_mtime] "Mon Feb 26 02:27:36 2024"
-[dumpfile_size] 6900
+[dumpfile_mtime] "Sat Mar  9 14:31:38 2024"
+[dumpfile_size] 917670
 [savefile] "top_design_tb.gtkw"
 [timestart] 0
 [size] 1288 600
 [pos] 67 171
-*-3.287805 -1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+*-3.887805 29 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
 [markername] AA
 [markername] BB
 [markername] CC
@@ -44,14 +44,15 @@
 @28
 top_design_tb.clk
 @22
-top_design_tb.pc_out[7:0]
-@28
-top_design_tb.controller.stage[2:0]
-@22
-top_design_tb.controller.opcode[3:0]
-top_design_tb.reg_a.reg_a[7:0]
-top_design_tb.reg_b.reg_b[7:0]
-top_design_tb.controller.ctrl_word[11:0]
-top_design_tb.bus[7:0]
+top_design_tb.bus[15:0]
+top_design_tb.reg_out[15:0]
+top_design_tb.mem_out[7:0]
+top_design_tb.alu_out[7:0]
+top_design_tb.alu_op[4:0]
+top_design_tb.alu_flags[7:0]
+top_design_tb.ir_out[7:0]
+top_design_tb.reg_rd_sel[4:0]
+@23
+top_design_tb.reg_wr_sel[4:0]
 [pattern_trace] 1
 [pattern_trace] 0

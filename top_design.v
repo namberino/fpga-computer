@@ -4,34 +4,45 @@ module top_design(
     // output reg[3:0] out1
 );
 
-	reg[15:0] bus;
+    reg[7:0] out;
+    always @(posedge clk, posedge rst)
+    begin
+        if (rst)
+        begin
+            out = 8'b0;
+        end else if (display)
+        begin
+            out = alu_out;
+        end
+    end
 
-	// multiplex between the output of the different modules
-	always @ (*)
-	begin
-		if (alu_en) 
-		begin
-			bus = alu_out;
-		end else if (a_en) 
-		begin
-			bus = a_out;
-		end else if (b_en)
-		begin
-			bus = b_out;
-		end else if (c_en)
-		begin
-			bus = c_out;
-		end else if (mdr_en)
-		begin
-			bus = mem_out;
-		end else if (pc_en) 
-		begin
-			bus = pc_out;
-		end else 
-		begin
-			bus = 8'b0;
-		end
-	end
+    // bus
+    reg[15:0] bus;
+    always @ (*)
+    begin
+        bus = 16'b0;
+
+        if (reg_oe)
+        begin
+            bus = reg_out;
+        end else if (mem_oe)
+        begin
+            bus = {8'b0, mem_out};
+        end else if (alu_oe)
+        begin
+            bus = {8'b0, alu_out};
+        end else if (alu_flags_oe)
+        begin
+            bus = {8'b0, alu_flags};
+        end
+    end
+
+
+    reg[23:0] slow_clk;
+    always @ (posedge CLK)
+    begin
+        slow_clk <= slow_clk + 1;
+    end
 
     // generate clock signal
     wire rst;
@@ -39,108 +50,115 @@ module top_design(
     wire clk;
     clock clock (
         .hlt(hlt),
-        .clk_in(CLK),
+        .clk_in(slow_clk[14]),
         .clk_out(clk)
     );
 
 
-    // program counter
-    wire pc_inc;
-    wire pc_en;
-    wire[7:0] pc_out;
-    pc pc(
-        .clk(clk),
-        .rst(rst),
-        .inc(pc_inc),
-        .out(pc_out)
-    );
-
-
     // memory
-    wire mar_load;
-    wire mem_en;
+    wire mem_mar_we;
+    wire mem_ram_we;
+    wire mem_oe;
     wire[7:0] mem_out;
-    memory mem(
+    memory memory (
         .clk(clk),
         .rst(rst),
-        .load(mar_load),
+        .mar_we(mem_mar_we),
+        .ram_we(mem_ram_we),
         .bus(bus),
         .out(mem_out)
     );
 
 
-    // A register
-    wire a_load;
-    wire a_en;
-    wire[7:0] a_out;
-    reg_a reg_a(
+    // Register file
+    wire reg_oe;
+    wire reg_we;
+    wire[4:0] reg_rd_sel;
+    wire[4:0] reg_wr_sel;
+    wire[1:0] reg_ext;
+    wire[15:0] reg_out;
+    reg_file reg_file (
         .clk(clk),
         .rst(rst),
-        .load(a_load),
-        .bus(bus),
-        .out(a_out)
-    );
-
-    // assign out1 = a_out[4:0];    // output register data to led
-
-
-    // B register
-    wire b_load;
-    wire[7:0] b_out;
-    reg_b reg_b(
-        .clk(clk),
-        .rst(rst),
-        .load(b_load),
-        .bus(bus),
-        .out(b_out)
+        .rd_sel(reg_rd_sel),
+        .wr_sel(reg_wr_sel),
+        .ext(reg_ext),
+        .we(reg_we),
+        .data_in(bus),
+        .out(reg_out)
     );
 
 
-    // adder 
-    wire adder_sub;
-    wire adder_en;
-    wire[7:0] adder_out;
-    adder adder(
-        .a(a_out),
-        .b(b_out),
-        .sub(adder_sub),
-        .out(adder_out)
+    // alu
+    wire alu_cs;
+    wire alu_flags_we;
+    wire alu_a_we;
+    wire alu_a_store;
+    wire alu_a_restore;
+    wire alu_tmp_we;
+    wire alu_oe;
+    wire alu_flags_oe;
+    wire[4:0] alu_op;
+    wire[7:0] alu_flags;
+    wire[7:0] alu_out;
+    alu alu (
+        .clk(clk),
+        .rst(rst),
+        .cs(alu_cs),
+        .flags_we(alu_flags_we),
+        .a_we(alu_a_we),
+        .a_store(alu_a_store),
+        .a_restore(alu_a_restore),
+        .tmp_we(alu_tmp_we),
+        .op(alu_op),
+        .bus(bus[7:0]),
+        .flags(alu_flags),
+        .out(alu_out)
     );
 
 
     // instruction register
-    wire ir_load;
-    wire ir_en;
+    wire ir_we;
     wire[7:0] ir_out;
-    ir ir(
+    ir ir (
         .clk(clk),
         .rst(rst),
-        .load(ir_load),
-        .bus(bus),
+        .we(ir_we),
+        .bus(bus[7:0]),
         .out(ir_out)
     );
 
 
     // controller
-    controller controller(
+    wire display;
+    controller controller (
         .clk(clk),
         .rst(rst),
-        .opcode(ir_out[7:4]), // last 4 bits
-        .out(
-        {
+        .opcode(ir_out),
+        .flags(alu_flags),
+        .out({
+            display,
             hlt,
-            pc_inc,
-            pc_en,
-            mar_load,
-            mem_en,
-            ir_load,
-            ir_en,
-            a_load,
-            a_en,
-            b_load,
-            adder_sub,
-            adder_en
+            alu_cs,
+            alu_flags_we,
+            alu_a_we,
+            alu_a_store,
+            alu_a_restore,
+            alu_tmp_we,
+            alu_op,
+            alu_oe,
+            alu_flags_oe,
+            reg_rd_sel,
+            reg_wr_sel,
+            reg_ext,
+            reg_oe,
+            reg_we,
+            mem_ram_we,
+            mem_mar_we,
+            mem_oe,
+            ir_we
         })
     );
+
 
 endmodule

@@ -91,7 +91,6 @@ module controller(
 		end else
 		begin
 			casez (opcode)
-			begin
 				// NOP
 				8'o000:
 				begin
@@ -773,7 +772,7 @@ module controller(
                         if (flags[opcode[5:4]] != opcode[3])
                         begin
                             ctrl_word[REG_WR_SEL_4:REG_WR_SEL_0] = REG_PC;
-                        ctrl_word[REG_EXT_1:REG_EXT_0] = REG_INC2;
+                        ctrl_word[REG_EXT_1:REG_EXT_0] = REG_INC_2;
                             stage_rst = 1'b1;
                         end else
                         begin
@@ -820,7 +819,7 @@ module controller(
                         if (flags[opcode[5:4]] != opcode[3])
                         begin
                             ctrl_word[REG_WR_SEL_4:REG_WR_SEL_0] = REG_PC;
-                            ctrl_word[REG_EXT_1:REG_EXT_0] = REG_INC2;
+                            ctrl_word[REG_EXT_1:REG_EXT_0] = REG_INC_2;
                             stage_rst = 1'b1;
                         end else
                         begin
@@ -1113,7 +1112,7 @@ module controller(
                         stage_rst = 1'b1;
                     end
                 end
-			end
+            endcase
 		end
 	end
 
