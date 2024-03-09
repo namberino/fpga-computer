@@ -3,7 +3,7 @@ module ir(
 	input clk, 
 	input rst,
 	input load,
-	input[15:0] bus,
+	input[7:0] bus,
 
 	output[7:0] out
 );
@@ -17,7 +17,7 @@ module ir(
 			ir <= 8'b0;
 		end else if (load)
 		begin
-			ir <= bus[7:0];
+			ir <= bus;
 		end
 	end
 
