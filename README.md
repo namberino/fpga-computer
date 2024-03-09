@@ -1,4 +1,4 @@
-# An computer implemented in FPGA
+# An computer implemented in FPGA (WIP)
 
 This is a computer implemented using Verilog
 

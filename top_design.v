@@ -1,7 +1,5 @@
 module top_design(
 	input CLK
-
-    // output reg[3:0] out1
 );
 
     reg[7:0] out;
