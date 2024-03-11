@@ -3,8 +3,9 @@ name: Verify
 on:
   push:
     branches:
-	  - main
-	  - 16bit
+      - main
+      - 8bit
+      - 16bit
 
 jobs:
   build:
